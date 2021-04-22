@@ -33,10 +33,12 @@ conn.close()
 def register_user(first_name, last_name, username, password1, password2):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
+    global up_register
     if (first_name!='' and last_name!='' and username!='' and password1!='' and password2!=''):
       if (password1 == password2):
         password = password1
         c.execute("INSERT INTO users VALUES(:first_name, :last_name, :username, :password)",{'first_name' : first_name, 'last_name':last_name, 'username':username, 'password':password})
+        conn.commit()
       else:
         messagebox.showwarning(title='Password Warning', message="Both Password don't match!")
         print()
@@ -46,7 +48,7 @@ def register_user(first_name, last_name, username, password1, password2):
       messagebox.showwarning(title='Input Warning', message='Please Enter all Data.')
       print()
       #wrong_password_error = Label(register, text="Enter all data!", fg="red").grid(row=6, column=1, columnspan= 3).grid(row=6, column=1, columnspan= 3)
-
+    
     first_name_entry.delete(0,END)
     last_name_entry.delete(0,END)
     username_entry.delete(0,END)
@@ -54,6 +56,9 @@ def register_user(first_name, last_name, username, password1, password2):
     password2_entry.delete(0,END)
 
     register_success = Label(register, text="Registeration Successful!", fg="green").grid(row=6, column=1, columnspan= 3)
+    c.execute("SELECT * FROM users WHERE username = (:un) AND password = (:pass) ",{'un':username,'pass':password1})
+    up_register = c.fetchall()
+    main_screen(up_register)
     conn.commit()
     conn.close()
 
@@ -87,7 +92,7 @@ def login():
     global username_login
     global password_login
     Label(register, text='Log In as Existing User', bg='#F0F8ff', font=('verdana', 30, 'bold')).place(x=125, y=40)
-
+    
     username_login = Entry(login, width=30).place(x=300,y=150,height = 30)
     password_login = Entry(login, width=30, show="*").place(x=300,y=250,height = 30)
 
@@ -131,6 +136,7 @@ def register():
     password2_label = Label(register, text="Confirm Password", bg='#F0F8FF', font=('arial', 20, 'normal')).place(x=60,y=350)
 
     register_btn = Button(register, text="Register",bg='#8EE5EE', font=('courier', 15, 'italic'),command=lambda: register_user(first_name_entry.get(), last_name_entry.get(), username_entry.get(), password1_entry.get(), password2_entry.get())).place(x=200,y=400,height=60,width = 175)
+    #main_screen(up_register)
 
 
 
@@ -211,16 +217,16 @@ def add_new_password(user):
     conn.commit()
     conn.close()
 
-def selected_item(a):
+def selected_item(current_user):
     curItem = listbox.focus()
     curr_values_list = listbox.item(curItem)['values']
     # print(listbox.item(curItem)['values'])
     
-    update_entry_button = Button(keybase, text="Update an Entry", command=lambda: update_entry_form(curr_values_list)).grid(row=0,column=2)
+    update_entry_button = Button(keybase, text="Update an Entry", command=lambda: update_entry_form(current_user,curr_values_list)).grid(row=0,column=2)
 
 
 # Update Function form
-def update_entry_form(curr_values_list):
+def update_entry_form(username,*curr_values_list):
 
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
@@ -229,14 +235,18 @@ def update_entry_form(curr_values_list):
     global app_email
     global app_username
     global app_password
-    app_name = Entry(keybase, width=30)
+    app_name = Entry(keybase,textvariable=curr_values_list[0], width=30,state = DISABLED)
     app_name.grid(row=2, column=1)
+    #app_name.insert(0,curr_values_list[0])
     app_email = Entry(keybase, width=30)
     app_email.grid(row=3, column=1)
+    app_email.insert(0,curr_values_list[1])
     app_username = Entry(keybase, width=30)
     app_username.grid(row=4, column=1)
+    app_username.insert(0,curr_values_list[2])
     app_password = Entry(keybase, width=30)
     app_password.grid(row=5, column=1)
+    app_password.insert(0,curr_values_list[3])
 
     
     global app_name_label
@@ -253,13 +263,25 @@ def update_entry_form(curr_values_list):
     app_username_label.grid(row=4, column=0)
     app_password_label = Label(keybase, text="Application password ")
     app_password_label.grid(row=5, column=0)
-    add_new_button = Button(keybase, text="Add", command=lambda: update_user(user))#add_new_password(user))
+    add_new_button = Button(keybase, text="Add", command=lambda: update_user_appDetails(username,curr_values_list[0],app_email.get(),app_username.get(),app_password.get()))#add_new_password(user))
     add_new_button.grid(row=6,column=0)
 
     conn.commit()
     conn.close()
 
-# update function to add values to database
+# Create update function to add values to database
+def update_user_appDetails(user_updated_appDetails):
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
+  c.execute("""
+  UPDATE passwords SET 
+  app_email = (:app_email) , 
+  app_username = (:app_username) , app_password = (:app_password) 
+  WHERE username = (:username) AND application = (:app_name)
+  """,{'app_email':user_updated_appDetails[2],'username':user_updated_appDetails[0],'app_name':user_updated_appDetails[1],
+  'app_username':user_updated_appDetails[3],'app_password':user_updated_appDetails[4]})
+  conn.commit()
+  conm.close()
 
 
     
@@ -310,8 +332,8 @@ def main_screen(user):
     label = Label(keybase, text="Your Passwords", font=("Arial",30)).grid(row=0, columnspan=3)
     cols = ('Serial Number','Application Name','Email','Username','Password')
     listbox = Treeview(keybase, columns = cols, show = 'headings')
-    listbox.bind('<ButtonRelease-1>', selected_item)
-    for i, (appname, appmail, appusername, apppassword) in enumerate(templist, start = 1):
+    listbox.bind('<ButtonRelease-1>', selected_item(current_user))
+    for i, (appname, appmail, appusername, apppassword) in enumerate(templist, start = 0):
         listbox.insert("","end",values = (i,appname, appmail, appusername, apppassword))
 
     for col in cols:
