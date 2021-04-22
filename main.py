@@ -333,7 +333,7 @@ def main_screen(user):
     cols = ('Serial Number','Application Name','Email','Username','Password')
     listbox = Treeview(keybase, columns = cols, show = 'headings')
     listbox.bind('<ButtonRelease-1>', selected_item(current_user))
-    for i, (appname, appmail, appusername, apppassword) in enumerate(templist, start = 0):
+    for i, (appname, appmail, appusername, apppassword) in enumerate(templist, start = 1):
         listbox.insert("","end",values = (i,appname, appmail, appusername, apppassword))
 
     for col in cols:
