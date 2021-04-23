@@ -217,7 +217,7 @@ def add_new_password(user):
     conn.commit()
     conn.close()
 
-def selected_item(current_user):
+def selected_item(current_user,a):
     curItem = listbox.focus()
     curr_values_list = listbox.item(curItem)['values']
     # print(listbox.item(curItem)['values'])
