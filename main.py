@@ -55,19 +55,27 @@ def register_user(first_name, last_name, username, password1, password2):
         
     else:
         password = password1
+        
         c.execute("INSERT INTO users VALUES(:first_name, :last_name, :username, :password)",{'first_name' : first_name, 'last_name':last_name, 'username':username, 'password':password})
         message=messagebox.showinfo(title='Successfully Registered!', message='Please proceed to Login.')
+        
+        first_name_entry.delete(0,END)
+        last_name_entry.delete(0,END)
+        username_entry.delete(0,END)
+        password1_entry.delete(0,END)
+        password2_entry.delete(0,END)
+
         if message == 'ok':
             register.destroy()
         
        
     # c.execute("SELECT * FROM users")
 
-    first_name_entry.delete(0,END)
-    last_name_entry.delete(0,END)
-    username_entry.delete(0,END)
-    password1_entry.delete(0,END)
-    password2_entry.delete(0,END)
+    # first_name_entry.delete(0,END)
+    # last_name_entry.delete(0,END)
+    # username_entry.delete(0,END)
+    # password1_entry.delete(0,END)
+    # password2_entry.delete(0,END)
 
     
 
@@ -78,6 +86,9 @@ def register_user(first_name, last_name, username, password1, password2):
 def login_user(username, password):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
+    c.execute("SELECT * FROM users")
+    all_users = c.fetchall()
+    print("all users: ",all_users)
     global user
     if username!="" and password!="":
         c.execute("SELECT * FROM users WHERE username = ? AND password = ?",(username, password))
@@ -97,7 +108,7 @@ def login():
     global login
     login = Toplevel()
     login.title("Login Page")
-    login.geometry('783x423')
+    
     login.configure(background='#F0F8FF')
     login.title('Login: KeyBase')
 
@@ -105,7 +116,7 @@ def login():
     global password_login
 
 
-    Label(login, text='Login ', bg='#F0F8FF', font=('verdana', 30, 'bold')).grid(row =0, column=0)
+    Label(login, text='Login ', bg='#F0F8FF', font=('verdana', 30, 'bold')).grid(row =0, column=0, columnspan=2)
     username_login = Entry(login, width=30)
     username_login.grid(row = 2, column=1)
     password_login = Entry(login, width=30, show="*")
@@ -115,7 +126,7 @@ def login():
     username_loginlabel = Label(login, text="Username", bg='#F0F8FF', font=('arial', 20, 'normal')).grid(row = 2, column=0)
     password_loginlabel = Label(login, text="Password", bg='#F0F8FF', font=('arial', 20, 'normal')).grid(row = 3, column=0)
 
-    login_btn = Button(login, text="Login", command=lambda: login_user(username_login.get(), password_login.get())).grid(row = 5, column=0, columnspan=2)
+    login_btn = Button(login, text="Login", bg='#8EE5EE', font=('courier', 10, 'italic'),command=lambda: login_user(username_login.get(), password_login.get())).grid(row = 5, column=0, columnspan=2)
 
 
 def register():
@@ -125,7 +136,7 @@ def register():
     register.configure(background='#F0F8FF')
     register.title('Register: KeyBase')
     
-    Label(register, text='Register as New User', bg='#F0F8FF', font=('verdana', 30, 'bold')).grid(row =0, column=0)
+    Label(register, text='Register as New User', bg='#F0F8FF', font=('verdana', 30, 'bold')).grid(row =0, column=0, columnspan=2)
 
     global first_name_entry
     global last_name_entry
@@ -150,7 +161,7 @@ def register():
     password1_label = Label(register, text="Password", bg='#F0F8FF', font=('arial', 20, 'normal')).grid(row = 5, column=0)
     password2_label = Label(register, text="Confirm Password",  bg='#F0F8FF', font=('arial', 20, 'normal')).grid(row = 6, column=0)
 
-    register_btn = Button(register, text="Register", command=lambda: register_user(first_name_entry.get(), last_name_entry.get(), username_entry.get(), password1_entry.get(), password2_entry.get())).grid(row = 7, column=0, columnspan=2)
+    register_btn = Button(register, text="Register", bg='#8EE5EE', font=('courier', 10, 'italic'), command=lambda: register_user(first_name_entry.get(), last_name_entry.get(), username_entry.get(), password1_entry.get(), password2_entry.get())).grid(row = 7, column=0, columnspan=2)
 
 
 
@@ -163,13 +174,13 @@ def add_password_form(user):
     global app_username
     global app_password
     app_name = Entry(keybase, width=30)
-    app_name.grid(row=2, column=1)
+    app_name.grid(row=4, column=1)
     app_email = Entry(keybase, width=30)
-    app_email.grid(row=3, column=1)
+    app_email.grid(row=5, column=1)
     app_username = Entry(keybase, width=30)
-    app_username.grid(row=4, column=1)
+    app_username.grid(row=6, column=1)
     app_password = Entry(keybase, width=30)
-    app_password.grid(row=5, column=1)
+    app_password.grid(row=7, column=1)
 
     # newpass_list = [app_name.get(), app_email.get(), app_username.get(), app_password.get()]
     global app_name_label
@@ -178,16 +189,16 @@ def add_password_form(user):
     global app_password_label
     global add_new_button
 
-    app_name_label = Label(keybase, text="Application Name ")
-    app_name_label.grid(row=2, column=0)
-    app_email_label = Label(keybase, text="Application email ")
-    app_email_label.grid(row=3, column=0)
-    app_username_label = Label(keybase, text="Application username ")
-    app_username_label.grid(row=4, column=0)
-    app_password_label = Label(keybase, text="Application password ")
-    app_password_label.grid(row=5, column=0)
-    add_new_button = Button(keybase, text="Add", command=lambda: add_new_password(user))
-    add_new_button.grid(row=6,column=0)
+    app_name_label = Label(keybase, text="Application Name ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    app_name_label.grid(row=4, column=0)
+    app_email_label = Label(keybase, text="Application email ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    app_email_label.grid(row=5, column=0)
+    app_username_label = Label(keybase, text="Application username ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    app_username_label.grid(row=6, column=0)
+    app_password_label = Label(keybase, text="Application password ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    app_password_label.grid(row=7, column=0)
+    add_new_button = Button(keybase, padx=10, pady = 5, bg='#8EE5EE', font=('courier', 10, 'italic'), text="Add", command=lambda: add_new_password(user))
+    add_new_button.grid(row=8,column=0)
 
     conn.commit()
     conn.close()
@@ -195,6 +206,7 @@ def add_password_form(user):
 
 def add_new_password(user):
     conn = sqlite3.connect("database.db")
+
     c = conn.cursor()
     newpass_list = [app_name.get(), app_email.get(), app_username.get(), app_password.get()]
     # print(newpass_list)
@@ -228,9 +240,6 @@ def add_new_password(user):
 
     print(pass_records)
     
-    
-
-
     conn.commit()
     conn.close()
 
@@ -243,8 +252,8 @@ def selected_item(a):
     print(listbox.selection()[0])
     curr_values_list = listbox.item(curItem)['values']
     print(listbox.item(curItem)['values'])
-    update_entry_button = Button(keybase, text="Update an Entry", command=update_entry_form).grid(row=0,column=2)
-    delete_entry_button = Button(keybase, text="Delete an Entry", command=delete_entry).grid(row=0,column=3)
+    update_entry_button = Button(keybase, padx=5, pady = 5, relief = 'solid', bg='#8EE5EE', font=('courier', 10, 'italic'),  text="Update an Entry", command=update_entry_form).grid(row=3,column=1)
+    delete_entry_button = Button(keybase, padx=5, pady = 5, relief = 'solid', bg='#8EE5EE', font=('courier', 10, 'italic'),  text="Delete an Entry", command=delete_entry).grid(row=3,column=2)
 
 
 
@@ -275,17 +284,17 @@ def update_entry_form():
     global update_app_email
     global update_app_username
     global update_app_password
-    update_app_name = Entry(keybase,textvariable=curr_values_list[0], width=30, state = DISABLED)
-    update_app_name.grid(row=2, column=1)
+    update_app_name = Entry(keybase,textvariable=curr_values_list[0], width=30)
+    update_app_name.grid(row=4, column=1)
     update_app_name.insert(0,curr_values_list[1])
     update_app_email = Entry(keybase, width=30)
-    update_app_email.grid(row=3, column=1)
+    update_app_email.grid(row=5, column=1)
     update_app_email.insert(0,curr_values_list[2])
     update_app_username = Entry(keybase, width=30)
-    update_app_username.grid(row=4, column=1)
+    update_app_username.grid(row=6, column=1)
     update_app_username.insert(0,curr_values_list[3])
     update_app_password = Entry(keybase, width=30)
-    update_app_password.grid(row=5, column=1)
+    update_app_password.grid(row=7, column=1)
     update_app_password.insert(0,curr_values_list[4])
 
     
@@ -295,18 +304,18 @@ def update_entry_form():
     global update_app_password_label
     global update_password_button
 
-    update_app_name_label = Label(keybase, text="Application Name ")
-    update_app_name_label.grid(row=2, column=0)
-    update_app_email_label = Label(keybase, text="Application email ")
-    update_app_email_label.grid(row=3, column=0)
-    update_app_username_label = Label(keybase, text="Application username ")
-    update_app_username_label.grid(row=4, column=0)
-    update_app_password_label = Label(keybase, text="Application password ")
-    update_app_password_label.grid(row=5, column=0)
+    update_app_name_label = Label(keybase, text="Application Name ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    update_app_name_label.grid(row=4, column=0)
+    update_app_email_label = Label(keybase, text="Application email ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    update_app_email_label.grid(row=5, column=0)
+    update_app_username_label = Label(keybase, text="Application username ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    update_app_username_label.grid(row=6, column=0)
+    update_app_password_label = Label(keybase, text="Application password ",bg='#F0F8FF', font=('courier', 10, 'italic'))
+    update_app_password_label.grid(row=7, column=0)
     print("Update function : ",[current_user,curr_values_list[0],curr_values_list[1],update_app_email.get(),update_app_username.get(),update_app_password.get()])
-    update_password_button = Button(keybase, text="Add", command=lambda: update_user_appDetails([current_user,curr_values_list[0],curr_values_list[1],update_app_email.get(),update_app_username.get(),update_app_password.get()]))#add_new_password(user))
+    update_password_button = Button(keybase, text="Update", padx=5, pady = 5, relief = 'solid',  bg='#8EE5EE', font=('courier', 10, 'italic'), command=lambda: update_user_appDetails([current_user,curr_values_list[0],curr_values_list[1],update_app_email.get(),update_app_username.get(),update_app_password.get() ,update_app_name.get()]))#add_new_password(user))
     
-    update_password_button.grid(row=6,column=0)
+    update_password_button.grid(row=8,column=0)
 
     conn.commit()
     conn.close()
@@ -317,12 +326,26 @@ def update_user_appDetails(user_updated_appDetails):
   c = conn.cursor()
   c.execute("""
   UPDATE passwords SET 
+  application = (:update_app_name),
   app_email = (:app_email) , 
   app_username = (:app_username) , app_password = (:app_password) 
   WHERE username = (:username) AND application = (:app_name)
   """,{'app_email':user_updated_appDetails[3],'username':user_updated_appDetails[0],'app_name':user_updated_appDetails[2],
-  'app_username':user_updated_appDetails[4],'app_password':user_updated_appDetails[5]})
-  listbox.item(curItem, text="", values=(user_updated_appDetails[1],user_updated_appDetails[2], user_updated_appDetails[3], user_updated_appDetails[4], user_updated_appDetails[5]))
+  'app_username':user_updated_appDetails[4],'app_password':user_updated_appDetails[5], 'update_app_name':user_updated_appDetails[6]})
+  listbox.item(curItem, text="", values=(user_updated_appDetails[1],user_updated_appDetails[6], user_updated_appDetails[3], user_updated_appDetails[4], user_updated_appDetails[5]))
+  update_app_name.grid_forget()
+  update_app_email.grid_forget()
+  update_app_username.grid_forget()
+  update_app_password.grid_forget()
+
+
+  update_app_name_label.grid_remove()
+  update_app_email_label.grid_remove()
+  update_app_username_label.grid_remove()
+  update_app_password_label.grid_remove()
+
+  update_password_button.grid_remove()
+    
   conn.commit()
   conn.close()
 
@@ -334,12 +357,13 @@ def main_screen(user):
     login.destroy()
     global keybase
     keybase = Toplevel()
+    keybase.configure(background='#F0F8FF')
     keybase.title("Keybase")
-    welcome_label = Label(keybase, text="Welcome "+user[0][0]).grid(row=6, column=1, columnspan= 3)
+    welcome_label = Label(keybase, text="Welcome "+user[0][0],bg='#F0F8FF').grid(row=0, column=0)
     print(user)
     
 
-    add_password_button = Button(keybase, text="Add new Password", command=lambda: add_password_form(user)).grid(row=0,column=0)
+    add_password_button = Button(keybase, text="Add new Password", command=lambda: add_password_form(user), padx=5, pady = 5, relief = 'solid',  bg='#8EE5EE', font=('courier', 10, 'italic')).grid(row=3,column=0, pady=20)
     global current_user
     current_user = user[0][2]
     print(current_user)
@@ -367,16 +391,17 @@ def main_screen(user):
     #         Label(keybase, text=pass_records[i][j]).grid(row = (i+8), column=(j-1))
 
     global listbox
-    label = Label(keybase, text="Your Passwords", font=("Arial",30)).grid(row=0, columnspan=3)
+    label = Label(keybase, text="Your Passwords",bg='#F0F8FF', font=("Verdana",30)).grid(row=1, columnspan=3)
     cols = ('Serial Number','Application Name','Email','Username','Password')
     listbox = Treeview(keybase, columns = cols, show = 'headings', selectmode='browse')
+
     listbox.bind('<ButtonRelease-1>', selected_item)
     for i, (appname, appmail, appusername, apppassword) in enumerate(templist, start = 1):
         listbox.insert("","end",values = (i,appname, appmail, appusername, apppassword))
 
     for col in cols:
         listbox.heading(col, text=col)
-    listbox.grid(row = 1, column=0,columnspan = 2)
+    listbox.grid(row = 2, column=0, columnspan = 3)
 
     
     # closeButton = Button(keybase, text="Close", width=15, command=exit).grid(row=4, column=1)
@@ -393,9 +418,9 @@ def main_screen(user):
 
 
 Label(root, text='Welcome to Keybase!', bg='#F0F8FF', font=('verdana', 30, 'bold')).place(x=143, y=86)
-login = Button(root, text='Login', bg='#8EE5EE', font=('courier', 10, 'italic'), command=login)
+login = Button(root, text='Login', bg='#8EE5EE', font=('courier', 20, 'bold'),padx=10, pady=10, relief = "solid", borderwidth = 2, command=login)
 login.place(x=233, y=186)
-register = Button(root, text='Register', bg='#8EE5EE', font=('courier', 10, 'italic'), command=register)
+register = Button(root, text='Register', bg='#8EE5EE', font=('courier', 20, 'bold'), command=register, padx=10, pady=10, relief = "solid", borderwidth = 2)
 register.place(x=429, y=186)
 
 
