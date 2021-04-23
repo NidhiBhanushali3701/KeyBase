@@ -218,13 +218,32 @@ def add_new_password(user):
     conn.close()
 
 def selected_item(current_user,a):
+    global curItem
+    global curr_values_list
+    global curItem_id
     curItem = listbox.focus()
+    curItem_id = listbox.selection()[0]
+    print(listbox.selection()[0])
     curr_values_list = listbox.item(curItem)['values']
-    # print(listbox.item(curItem)['values'])
+    print(listbox.item(curItem)['values'])
     
     update_entry_button = Button(keybase, text="Update an Entry", command=lambda: update_entry_form(current_user,curr_values_list)).grid(row=0,column=2)
+    delete_entry_button = Button(keybase, text="Delete an Entry", command=delete_entry).grid(row=0,column=3)
+
+# delete starts
+def delete_entry():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    
+    c.execute("DELETE FROM passwords WHERE application = ? AND app_username = ?",(curr_values_list[1],curr_values_list[3],))
+    listbox.delete(curItem_id)
+    # main_screen(user)
 
 
+    conn.commit()
+    conn.close()
+        
 # Update Function form
 def update_entry_form(username,*curr_values_list):
 
