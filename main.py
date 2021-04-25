@@ -9,31 +9,31 @@ root.configure(background='#F0F8FF')
 root.title('KeyBase')
 conn = sqlite3.connect("database.db")
 c = conn.cursor()
-# Created Table
-# c.execute(
-#     """
-#         CREATE TABLE users (
-#             first_name text, last_name text, username text, password text
-#         )
-#     """
-
-
-
-# )
-
-# c.execute(
-#     """
-
-#     CREATE TABLE passwords (
-
-     
-#             username text, application text, app_email text, app_username text, app_password text
-#         )
-#     """
-
- 
-# )
-
+# Created Tables
+#users table
+c.execute(
+"""
+CREATE TABLE IF NOT EXISTS users (
+     first_name text, 
+     last_name text, 
+     username text, 
+     password text
+)
+"""
+)
+#passwords table
+c.execute(
+"""
+CREATE TABLE IF NOT EXISTS passwords (
+     username text, 
+     application text, 
+     app_email text, 
+     app_username text, 
+     app_password text
+)
+"""
+)
+#commit & close
 conn.commit()
 conn.close()
 
@@ -77,7 +77,6 @@ def register_user(first_name, last_name, username, password1, password2):
     # password1_entry.delete(0,END)
     # password2_entry.delete(0,END)
 
-    
 
     conn.commit()
     conn.close()
@@ -235,7 +234,7 @@ def add_new_password(user):
 
     #     Label(keybase, text=pass_records[len(pass_records)-1][j]).grid(row = (len(pass_records)-1+8), column=(j-1))
     listbox.insert("","end",values = (len(pass_records),newpass_list[0], newpass_list[1], newpass_list[2], newpass_list[3]))
-    listbox.grid(row = 1, column=0,columnspan = 2)
+    listbox.grid(row = 2, column=0,columnspan = 3)
 
 
     print(pass_records)
@@ -247,14 +246,17 @@ def selected_item(a):
     global curItem
     global curr_values_list
     global curItem_id
+    global update_entry_button
+    global delete_entry_button
     curItem = listbox.focus()
     curItem_id = listbox.selection()[0]
     print(listbox.selection()[0])
     curr_values_list = listbox.item(curItem)['values']
     print(listbox.item(curItem)['values'])
-    update_entry_button = Button(keybase, padx=5, pady = 5, relief = 'solid', bg='#8EE5EE', font=('courier', 10, 'italic'),  text="Update an Entry", command=update_entry_form).grid(row=3,column=1)
-    delete_entry_button = Button(keybase, padx=5, pady = 5, relief = 'solid', bg='#8EE5EE', font=('courier', 10, 'italic'),  text="Delete an Entry", command=delete_entry).grid(row=3,column=2)
-
+    update_entry_button = Button(keybase, padx=5, pady = 5, relief = 'solid', bg='#8EE5EE', font=('courier', 10, 'italic'),  text="Update an Entry", command=update_entry_form)
+    update_entry_button.grid(row=3,column=1)
+    delete_entry_button = Button(keybase, padx=5, pady = 5, relief = 'solid', bg='#8EE5EE', font=('courier', 10, 'italic'),  text="Delete an Entry", command=delete_entry)
+    delete_entry_button.grid(row=3,column=2)
 
 
 # DELETE START
@@ -266,6 +268,8 @@ def delete_entry():
     
     c.execute("DELETE FROM passwords WHERE application = ? AND app_username = ?",(curr_values_list[1],curr_values_list[3],))
     listbox.delete(curItem_id)
+    update_entry_button.grid_forget()
+    delete_entry_button.grid_forget()
     
 
 
@@ -359,7 +363,7 @@ def main_screen(user):
     keybase = Toplevel()
     keybase.configure(background='#F0F8FF')
     keybase.title("Keybase")
-    welcome_label = Label(keybase, text="Welcome "+user[0][0],bg='#F0F8FF').grid(row=0, column=0)
+    welcome_label = Label(keybase, text="Welcome "+user[0][0],bg='#F0F8FF', font=("Verdana",20)).grid(row=0, columnspan=3)
     print(user)
     
 
@@ -391,7 +395,7 @@ def main_screen(user):
     #         Label(keybase, text=pass_records[i][j]).grid(row = (i+8), column=(j-1))
 
     global listbox
-    label = Label(keybase, text="Your Passwords",bg='#F0F8FF', font=("Verdana",30)).grid(row=1, columnspan=3)
+    label = Label(keybase, text="Your Passwords",bg='#F0F8FF', font=("Verdana",26)).grid(row=1, columnspan=3)
     cols = ('Serial Number','Application Name','Email','Username','Password')
     listbox = Treeview(keybase, columns = cols, show = 'headings', selectmode='browse')
 
