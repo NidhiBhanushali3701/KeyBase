@@ -207,34 +207,37 @@ def add_new_password(user):
     conn = sqlite3.connect("database.db")
 
     c = conn.cursor()
-    newpass_list = [app_name.get(), app_email.get(), app_username.get(), app_password.get()]
+    if(app_name.get()=='' or app_email.get()=='' or app_email.get()=='' or app_password.get()==''):
+        messagebox.showwarning(title='Input Warning', message='Please Enter all Data.')
+    else:
+        newpass_list = [app_name.get(), app_email.get(), app_username.get(), app_password.get()]
     # print(newpass_list)
     # print(user)
 
-    c.execute("INSERT INTO passwords VALUES(:username, :application , :app_email,:app_username,:app_password)",{'username' : user[0][2], 'application':newpass_list[0], 'app_email':newpass_list[1],'app_username':newpass_list[2], 'app_password':newpass_list[3]})
-    # keybase.destroy()]
-    app_name.grid_forget()
-    app_email.grid_forget()
-    app_username.grid_forget()
-    app_password.grid_forget()
+        c.execute("INSERT INTO passwords VALUES(:username, :application , :app_email,:app_username,:app_password)",{'username' : user[0][2], 'application':newpass_list[0], 'app_email':newpass_list[1],'app_username':newpass_list[2], 'app_password':newpass_list[3]})
+        # keybase.destroy()]
+        app_name.grid_forget()
+        app_email.grid_forget()
+        app_username.grid_forget()
+        app_password.grid_forget()
 
 
-    app_name_label.grid_remove()
-    app_email_label.grid_remove()
-    app_username_label.grid_remove()
-    app_password_label.grid_remove()
+        app_name_label.grid_remove()
+        app_email_label.grid_remove()
+        app_username_label.grid_remove()
+        app_password_label.grid_remove()
 
-    add_new_button.grid_remove()
-    
-    current_user = user[0][2]
+        add_new_button.grid_remove()
+        
+        current_user = user[0][2]
 
-    c.execute("SELECT * FROM passwords WHERE username = ?",(current_user,))
-    pass_records = c.fetchall()
-    # for j in range(1,5):
+        c.execute("SELECT * FROM passwords WHERE username = ?",(current_user,))
+        pass_records = c.fetchall()
+        # for j in range(1,5):
 
-    #     Label(keybase, text=pass_records[len(pass_records)-1][j]).grid(row = (len(pass_records)-1+8), column=(j-1))
-    listbox.insert("","end",values = (len(pass_records),newpass_list[0], newpass_list[1], newpass_list[2], newpass_list[3]))
-    listbox.grid(row = 2, column=0,columnspan = 3)
+        #     Label(keybase, text=pass_records[len(pass_records)-1][j]).grid(row = (len(pass_records)-1+8), column=(j-1))
+        listbox.insert("","end",values = (len(pass_records),newpass_list[0], newpass_list[1], newpass_list[2], newpass_list[3]))
+        listbox.grid(row = 2, column=0,columnspan = 3)
 
 
     print(pass_records)
@@ -328,27 +331,31 @@ def update_entry_form():
 def update_user_appDetails(user_updated_appDetails):
   conn = sqlite3.connect('database.db')
   c = conn.cursor()
-  c.execute("""
-  UPDATE passwords SET 
-  application = (:update_app_name),
-  app_email = (:app_email) , 
-  app_username = (:app_username) , app_password = (:app_password) 
-  WHERE username = (:username) AND application = (:app_name)
-  """,{'app_email':user_updated_appDetails[3],'username':user_updated_appDetails[0],'app_name':user_updated_appDetails[2],
-  'app_username':user_updated_appDetails[4],'app_password':user_updated_appDetails[5], 'update_app_name':user_updated_appDetails[6]})
-  listbox.item(curItem, text="", values=(user_updated_appDetails[1],user_updated_appDetails[6], user_updated_appDetails[3], user_updated_appDetails[4], user_updated_appDetails[5]))
-  update_app_name.grid_forget()
-  update_app_email.grid_forget()
-  update_app_username.grid_forget()
-  update_app_password.grid_forget()
+  if(update_app_name.get()=='' or update_app_email.get()=='' or update_app_email.get()=='' or update_app_password.get()==''):
+        messagebox.showwarning(title='Input Warning', message='Please Enter all Data.')
+  else:
+
+    c.execute("""
+    UPDATE passwords SET 
+    application = (:update_app_name),
+    app_email = (:app_email) , 
+    app_username = (:app_username) , app_password = (:app_password) 
+    WHERE username = (:username) AND application = (:app_name)
+    """,{'app_email':user_updated_appDetails[3],'username':user_updated_appDetails[0],'app_name':user_updated_appDetails[2],
+    'app_username':user_updated_appDetails[4],'app_password':user_updated_appDetails[5], 'update_app_name':user_updated_appDetails[6]})
+    listbox.item(curItem, text="", values=(user_updated_appDetails[1],user_updated_appDetails[6], user_updated_appDetails[3], user_updated_appDetails[4], user_updated_appDetails[5]))
+    update_app_name.grid_forget()
+    update_app_email.grid_forget()
+    update_app_username.grid_forget()
+    update_app_password.grid_forget()
 
 
-  update_app_name_label.grid_remove()
-  update_app_email_label.grid_remove()
-  update_app_username_label.grid_remove()
-  update_app_password_label.grid_remove()
+    update_app_name_label.grid_remove()
+    update_app_email_label.grid_remove()
+    update_app_username_label.grid_remove()
+    update_app_password_label.grid_remove()
 
-  update_password_button.grid_remove()
+    update_password_button.grid_remove()
     
   conn.commit()
   conn.close()
