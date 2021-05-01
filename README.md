@@ -13,3 +13,6 @@ Python Tkinter GUI Application to store/manage the passwords/account details of 
 5. Delete existing account details
 
 ---
+
+
+Developed By Nidhi & Kashish
